@@ -8,6 +8,28 @@ from dotenv import load_dotenv
 from src.memory import load_user_context, format_context_block, format_style_block
 from src.generators import generate_resume, generate_cover_letter, generate_cold_email, DEFAULT_MODEL
 
+FAVORITE_MODEL = "gemini-2.5-flash-lite-preview-06-17"
+
+
+def fetch_models(api_key: str) -> list[str]:
+    """Fetch all generateContent-capable models from Gemini API."""
+    try:
+        genai.configure(api_key=api_key)
+        models = [
+            m.name.replace("models/", "")
+            for m in genai.list_models()
+            if "generateContent" in m.supported_generation_methods
+        ]
+        return models if models else [FAVORITE_MODEL]
+    except Exception as e:
+        st.sidebar.warning(f"Could not fetch models: {e}")
+        return [FAVORITE_MODEL]
+
+
+def label(model: str) -> str:
+    """Add ⭐ prefix to favorite model for display."""
+    return f"⭐ {model}" if model == FAVORITE_MODEL else model
+
 load_dotenv()
 
 # ── Page config ───────────────────────────────────────────────────────────────
@@ -36,34 +58,45 @@ with st.sidebar:
     # ── Model selector ────────────────────────────────────────────────────────
     st.subheader("🤖 Model")
 
-    # Fetch available models when API key is entered
-    if api_key:
-        try:
-            genai.configure(api_key=api_key)
-            available_models = [
-                m.name.replace("models/", "")
-                for m in genai.list_models()
-                if "generateContent" in m.supported_generation_methods
-            ]
-        except Exception:
-            available_models = [DEFAULT_MODEL]
-    else:
-        available_models = [DEFAULT_MODEL]
+    # Init session state
+    if "model_list" not in st.session_state:
+        st.session_state.model_list = [FAVORITE_MODEL]
+    if "last_api_key" not in st.session_state:
+        st.session_state.last_api_key = ""
 
-    # Default to DEFAULT_MODEL if available, else first in list
+    # Auto-fetch when API key is first entered or changes
+    if api_key and api_key != st.session_state.last_api_key:
+        with st.spinner("Fetching available models..."):
+            st.session_state.model_list = fetch_models(api_key)
+            st.session_state.last_api_key = api_key
+
+    # Manual refresh button
+    if api_key and st.button("🔄 Refresh Models", use_container_width=True):
+        with st.spinner("Fetching available models..."):
+            st.session_state.model_list = fetch_models(api_key)
+
+    available_models = st.session_state.model_list
+
+    # Build labeled options with ⭐ on favorite
+    labeled_options = [label(m) for m in available_models]
+
+    # Default index — prefer favorite, else first
+    fav_label = label(FAVORITE_MODEL)
     default_index = (
-        available_models.index(DEFAULT_MODEL)
-        if DEFAULT_MODEL in available_models
+        labeled_options.index(fav_label)
+        if fav_label in labeled_options
         else 0
     )
 
-    selected_model = st.selectbox(
+    selected_label = st.selectbox(
         "Active Model",
-        options=available_models,
+        options=labeled_options,
         index=default_index,
-        help="Models are fetched live from your API key. Select one and it's used immediately.",
+        help="⭐ = your favorite model. Click Refresh Models to reload the list.",
     )
 
+    # Strip ⭐ prefix back to get real model name
+    selected_model = selected_label.replace("⭐ ", "")
     st.caption(f"Using: `{selected_model}`")
 
     st.divider()
