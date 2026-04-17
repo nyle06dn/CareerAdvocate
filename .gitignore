@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+
+# Personal data files (keep private)
+data/
+
+# Environment variables (keep your API key secret)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
