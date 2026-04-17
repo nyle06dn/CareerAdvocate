@@ -6,9 +6,8 @@ from src.prompts import (
     SYSTEM_CAREER_AGENT,
     resume_prompt,
     cover_letter_prompt,
-    cold_email_prompt,
+    founder_outreach_prompt,
 )
-
 DEFAULT_MODEL = "gemini-2.5-flash-lite-preview-06-17"
 
 
@@ -43,12 +42,14 @@ def _call(api_key: str, system: str, user: str, model: str) -> str:
 def generate_resume(
     api_key: str,
     context_block: str,
+    format_block: str,
+    governance_block: str,
     job_description: str,
     company: str,
     role: str,
     model: str = DEFAULT_MODEL,
 ) -> str:
-    prompt = resume_prompt(context_block, job_description, company, role)
+    prompt = resume_prompt(context_block, format_block, governance_block, job_description, company, role)
     return _call(api_key, SYSTEM_CAREER_AGENT, prompt, model)
 
 
@@ -68,14 +69,13 @@ def generate_cover_letter(
     return _call(api_key, SYSTEM_CAREER_AGENT, prompt, model)
 
 
-def generate_cold_email(
+def generate_founder_outreach(
     api_key: str,
-    context_block: str,
-    style_block: str,
+    governance_block: str,
     company: str,
-    role: str,
-    recipient_title: str = "Head of Engineering",
+    founder_name: str,
+    founder_research: str,
     model: str = DEFAULT_MODEL,
 ) -> str:
-    prompt = cold_email_prompt(context_block, style_block, company, role, recipient_title)
+    prompt = founder_outreach_prompt(governance_block, company, founder_name, founder_research)
     return _call(api_key, SYSTEM_CAREER_AGENT, prompt, model)

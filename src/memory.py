@@ -32,6 +32,9 @@ def load_user_context() -> dict:
         "projects": _read("projects.md"),
         "stories": _read("stories.md"),
         "writing_samples": _read_writing_samples(),
+        "format": _read("format.md"),
+        "resume_governance": _read("resume_governance.md"),
+        "outreach_governance": _read("outreach_governance.md"),
     }
 
 
@@ -55,3 +58,8 @@ def format_style_block(ctx: dict) -> str:
     if not ctx["writing_samples"]:
         return ""
     return f"=== MY PAST WRITING SAMPLES ===\n{ctx['writing_samples']}"
+
+
+def format_format_block(ctx: dict) -> str:
+    """Return the LaTeX format template."""
+    return ctx.get("format", "")

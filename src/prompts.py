@@ -7,27 +7,58 @@ You never use filler phrases like "I am passionate about" or "I am a team player
 You write specifically, concretely, and in the candidate's own voice."""
 
 
-def resume_prompt(context_block: str, job_description: str, company: str, role: str) -> str:
-    return f"""You are tailoring a resume for a specific job application.
+def resume_prompt(
+    context_block: str,
+    format_block: str,
+    governance_block: str,
+    job_description: str,
+    company: str,
+    role: str,
+) -> str:
+    return f"""You are tailoring a resume for a specific job application. Output valid LaTeX code only.
 
-CANDIDATE CONTEXT:
+═══════════════════════════════════════
+GOVERNANCE RULES — FOLLOW STRICTLY
+═══════════════════════════════════════
+{governance_block}
+
+═══════════════════════════════════════
+CANDIDATE RAW DATA
+═══════════════════════════════════════
 {context_block}
 
+═══════════════════════════════════════
+LATEX FORMAT TEMPLATE
+═══════════════════════════════════════
+{format_block}
+
+═══════════════════════════════════════
 TARGET ROLE: {role} at {company}
+═══════════════════════════════════════
 
 JOB DESCRIPTION:
 {job_description}
 
-INSTRUCTIONS:
-1. Output a complete, ATS-optimized resume in plain text (no markdown, no tables).
-2. STRICT 1-PAGE LIMIT — include only what is most relevant to this role.
-3. Mirror keywords from the job description naturally throughout the resume.
-4. Every bullet point must be metric-driven: use numbers, percentages, or scale.
-   Format: [Strong verb] + [what you did] + [result/impact].
-5. Sections (in order): Contact Info | Summary (2–3 lines) | Skills | Experience | Projects | Education
-6. Summary must be role-specific — not generic. Mention the company name.
-7. Do NOT include irrelevant experience. Do NOT pad with soft-skill buzzwords.
-8. Output ONLY the resume text. No preamble, no explanation.
+═══════════════════════════════════════
+OUTPUT RULES
+═══════════════════════════════════════
+1. Output a complete, valid LaTeX resume using EXACTLY the template structure above.
+
+2. STRICT 1-PAGE LIMIT — section entry limits:
+   - Projects:    pick 2–3 most relevant. Max 3 bullet points each.
+   - Experience:  pick 2–3 most relevant. Max 3 bullet points each.
+   - Leadership:  pick 1–2 most relevant. Max 2 bullet points each.
+   - Education:   READ-ONLY — copy exactly from template, do not modify.
+   - Skills:      READ-ONLY — copy exactly from template, do not modify.
+
+3. For Projects:
+   - Project name, date/timeline, and subtitle (italic line) are READ-ONLY — copy exactly.
+   - Bullet points only: apply the Core Transformation Formula and Power Verbs from the Role-Specific Matrix.
+   - Use [X]% or [Metric] placeholders if a quantifiable result is not in source data.
+4. For Experience & Leadership: copy bullets as-is with light grammar cleanup only. Do NOT reframe or apply transformation verbs.
+
+5. Do NOT change the LaTeX preamble, formatting commands, or document structure.
+6. Output ONLY the LaTeX code — no explanation, no markdown fences, no extra text.
 """
 
 
@@ -73,38 +104,45 @@ INSTRUCTIONS:
 """
 
 
-def cold_email_prompt(
-    context_block: str,
-    style_block: str,
+def founder_outreach_prompt(
+    governance_block: str,
     company: str,
-    role: str,
-    recipient_title: str = "Head of Engineering",
+    founder_name: str,
+    founder_research: str,
 ) -> str:
-    style_section = (
-        f"\nMY WRITING STYLE (analyze and mirror this voice):\n{style_block}\n"
-        if style_block
-        else ""
-    )
+    return f"""You are personalizing a founder outreach email. Follow the governance rules exactly.
 
-    return f"""You are writing a cold outreach email from a job seeker to a senior leader.
+═══════════════════════════════════════
+OUTREACH GOVERNANCE — FOLLOW STRICTLY
+═══════════════════════════════════════
+{governance_block}
 
-CANDIDATE CONTEXT:
-{context_block}
-{style_section}
-TARGET: {recipient_title} at {company}
-DESIRED ROLE: {role}
+═══════════════════════════════════════
+TARGET
+═══════════════════════════════════════
+Company: {company}
+Founder: {founder_name}
 
-INSTRUCTIONS:
-1. Write a cold email that is under 120 words total. Every sentence must earn its place.
-2. Tone: hungry but not desperate. Confident but not arrogant. Direct and human.
-3. Analyze my writing samples and mirror my voice. If no samples, write crisply.
-4. Structure:
-   - Subject line (write it as "Subject: ...")
-   - Opening: One sentence on why you're reaching out to THEM specifically.
-     Reference something real (their team's work, a product, a mission statement).
-   - Middle: 2 sentences on who you are + your single most relevant achievement (with a number).
-   - Ask: One clear, low-friction ask. A 15-minute call, not "Please review my resume."
-   - Sign-off: Name, email, GitHub/LinkedIn/portfolio link.
-5. Do NOT use "I hope this email finds you well" or any similar filler.
-6. Output ONLY the email (subject line + body). No preamble, no explanation.
+═══════════════════════════════════════
+FOUNDER & COMPANY RESEARCH NOTES
+═══════════════════════════════════════
+{founder_research if founder_research.strip() else "No research provided — use what can be inferred from the company name only. Flag placeholders clearly."}
+
+═══════════════════════════════════════
+OUTPUT RULES
+═══════════════════════════════════════
+1. Use the EXACT fixed template from the governance doc — do not rewrite any lines.
+2. Fill ONLY the four placeholders: [FOUNDER_FIRST_NAME], [COMPANY_NAME],
+   [INSERT reason - founder], [INSERT reason - company].
+3. Each reason must be specific — no generic phrases. Apply the banned phrases list.
+4. Output the full message block in this format:
+
+---
+## {company}
+**To:** [Full Founder Name] — [Title]
+**YC:** [Yes — Batch / No]
+**Recent Milestone:** [1-line summary, or "None found"]
+
+### Message:
+[complete filled message — every line, no truncation]
 """
