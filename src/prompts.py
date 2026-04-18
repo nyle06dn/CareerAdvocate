@@ -45,17 +45,24 @@ OUTPUT RULES
 1. Output a complete, valid LaTeX resume using EXACTLY the template structure above.
 
 2. STRICT 1-PAGE LIMIT — section entry limits:
-   - Projects:    pick 2–3 most relevant. Max 3 bullet points each.
-   - Experience:  pick 2–3 most relevant. Max 3 bullet points each.
-   - Leadership:  pick 1–2 most relevant. Max 2 bullet points each.
+   - Projects:    pick 2–3 entries. Max 3 bullet points each.
+   - Experience:  pick 2–3 entries. Max 3 bullet points each.
+   - Leadership:  pick 1–2 entries. Max 2 bullet points each.
    - Education:   READ-ONLY — copy exactly from template, do not modify.
    - Skills:      READ-ONLY — copy exactly from template, do not modify.
 
+   Ordering rule for every dynamic section — apply in this sequence:
+   1. Time: sort latest to oldest by start date
+   2. Relevance: within similar time periods, put most relevant to target role first
+   3. Oldest last: entries with oldest dates always go at the bottom
+
 3. For Projects:
    - Project name, date/timeline, and subtitle (italic line) are READ-ONLY — copy exactly.
-   - Bullet points only: apply the Core Transformation Formula and Power Verbs from the Role-Specific Matrix.
+   - Bullet points: use the ORIGINAL bullet from source data as the base. Only swap the opening
+     action verb and role-specific framing. All original technical detail, tools, and context
+     must be fully preserved — never shorten, summarize, or drop any detail.
    - Use [X]% or [Metric] placeholders if a quantifiable result is not in source data.
-4. For Experience & Leadership: copy bullets as-is with light grammar cleanup only. Do NOT reframe or apply transformation verbs.
+4. For Experience & Leadership: READ-ONLY — source is the EXPERIENCE & LEADERSHIP block in candidate data. Copy every role title, org, date, and bullet exactly as written. Do NOT change a single word, verb, or phrase.
 
 5. Do NOT change the LaTeX preamble, formatting commands, or document structure.
 6. Output ONLY the LaTeX code — no explanation, no markdown fences, no extra text.

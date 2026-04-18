@@ -30,6 +30,7 @@ def load_user_context() -> dict:
         "profile": _read("profile.md"),
         "skills": _read("skills.md"),
         "projects": _read("projects.md"),
+        "experiences": _read("experiences.md"),
         "stories": _read("stories.md"),
         "writing_samples": _read_writing_samples(),
         "format": _read("format.md"),
@@ -44,6 +45,7 @@ def format_context_block(ctx: dict) -> str:
         ("PERSONAL PROFILE", ctx["profile"]),
         ("SKILLS", ctx["skills"]),
         ("PROJECTS", ctx["projects"]),
+        ("EXPERIENCE & LEADERSHIP", ctx["experiences"]),
         ("STAR STORIES & ACHIEVEMENTS", ctx["stories"]),
     ]
     parts = []
@@ -61,5 +63,11 @@ def format_style_block(ctx: dict) -> str:
 
 
 def format_format_block(ctx: dict) -> str:
-    """Return the LaTeX format template."""
-    return ctx.get("format", "")
+    """Return the LaTeX format template with markdown code fences stripped."""
+    import re
+    raw = ctx.get("format", "")
+    # Extract all content inside ```latex ... ``` blocks and join them
+    blocks = re.findall(r"```latex\s*(.*?)```", raw, re.DOTALL)
+    if blocks:
+        return "\n\n".join(b.strip() for b in blocks)
+    return raw

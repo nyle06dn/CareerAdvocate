@@ -91,6 +91,7 @@ with st.sidebar:
         ("Profile",              "profile",              "data/profile.md"),
         ("Skills",               "skills",               "data/skills.md"),
         ("Projects",             "projects",             "data/projects.md"),
+        ("Experiences",          "experiences",          "data/experiences.md"),
         ("Stories",              "stories",              "data/stories.md"),
         ("Writing Samples",      "writing_samples",      "data/writing_samples/"),
         ("Resume Governance",    "resume_governance",    "data/resume_governance.md"),
